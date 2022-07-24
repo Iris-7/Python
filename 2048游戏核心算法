@@ -1,0 +1,88 @@
+# -*-codeing = utf-8 -*-
+# @Time : 2022-07-18 10:34
+# @Author : 吴心如
+# @File : game2048_core.py
+# @Software : PyCharm
+"""
+2048核心算法
+"""
+list_merge = None
+
+def zero_to_end():
+    """
+    将列表中的0元素移到末尾
+    """
+    for i in range(-1, -len(list_merge) - 1, -1):
+        if list_merge[i] == 0:
+            del list_merge[i]
+            list_merge.append(0)
+
+def merge():
+    """
+    合并相邻的相同元素
+    """
+    # 先将中间的0元素移至末尾
+    # 再合并相邻的相同元素
+    zero_to_end()
+    for i in range(len(list_merge) - 1):
+        if list_merge[i] == list_merge[i + 1]:
+            list_merge[i] += list_merge[i]
+            del list_merge[i + 1]
+            list_merge.append(0)
+
+map = [
+    [2, 0, 0, 2],
+    [4, 4, 2, 2],
+    [2, 4, 0, 4],
+    [0, 0, 2, 2],
+]
+
+def move_left():
+    """
+    地图向左移动合并相同元素
+    思想：将二维列表每行从左到右交个merge进行处理
+    """
+    global list_merge
+    for line in map:
+        list_merge = line
+        merge()
+
+def move_right():
+    """
+    地图向右移动合并相同元素
+    思想：将二维列表每行从右到左交个merge进行处理
+    """
+    global list_merge
+    for line in map:
+        # （右移）2202-0024原来数据：2202  - 反向获得：2022 -除0：2220 -合并：2400 -反向切片右移：0024
+        # （左移）2202-2400 原来数据：2202 - 正向获得：2202 - 除0：2220 - 合并：4200
+        list_merge = line[::-1]
+        merge()
+        line[::-1] = list_merge
+
+# move_right()
+# print(map)
+def Square_matrix_transpose(sqr_mitrix):
+    for c in range(1, len(sqr_mitrix)):
+        for r in range(c, len(sqr_mitrix)):
+            sqr_mitrix[r][c - 1], sqr_mitrix[c - 1][r] = sqr_mitrix[c - 1][r], sqr_mitrix[r][c - 1]
+
+def move_up():
+    """
+    地图向上移动合并相同元素
+    思想：先行列转置，再左移，再转置
+    """
+    Square_matrix_transpose(map)
+    move_left()
+    Square_matrix_transpose(map)
+
+def move_down():
+    """
+    地图向下移动合并相同元素
+    思想：先行列转置，再左移，再转置
+    """
+    Square_matrix_transpose(map)
+    move_right()
+    Square_matrix_transpose(map)
+
+
